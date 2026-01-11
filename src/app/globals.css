@@ -1,26 +1,64 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "daisyui" {
+  themes: light --default, dark;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+@plugin "daisyui/theme" {
+  name: "light";
+  default: true;
+
+  /* Brand Colors */
+  --color-primary: oklch(55% 0.18 35);    /* Warm Terracotta - Stimulates appetite */
+  --color-secondary: oklch(78% 0.12 75);  /* Golden Honey - Premium feel */
+  --color-accent: oklch(45% 0.12 150);    /* Forest Green - For fresh ingredients */
+
+  /* Base Colors (Backgrounds) */
+  --color-base-100: oklch(98% 0.01 60);   /* Soft Ivory - Not piercing white */
+  --color-base-200: oklch(94% 0.02 60);   /* Light Cream shade */
+  --color-base-300: oklch(88% 0.03 60);   /* Muted Beige for borders */
+
+  /* Content */
+  --color-neutral: oklch(25% 0.02 40);    /* Dark Chocolate for text */
+  --color-neutral-content: oklch(98% 0.01 60);
+
+  /* Feedback */
+  --color-success: oklch(70% 0.15 140);
+  --color-error: oklch(60% 0.2 25);
+  --color-warning: oklch(80% 0.15 80);
+  --color-info: oklch(65% 0.1 230);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@plugin "daisyui/theme" {
+  name: "dark";
+
+  /* Brand Colors */
+  --color-primary: oklch(65% 0.16 35);    /* Brightened Terracotta */
+  --color-secondary: oklch(82% 0.1 80);    /* Soft Gold */
+  --color-accent: oklch(75% 0.1 150);     /* Pale Sage Green */
+
+  /* Base Colors (Dark Backgrounds) */
+  --color-base-100: oklch(18% 0.015 35);  /* Deep Charcoal/Black */
+  --color-base-200: oklch(14% 0.015 35);  /* Darker background */
+  --color-base-300: oklch(10% 0.01 35);   /* Darkest accent */
+
+  /* Content */
+  --color-neutral: oklch(90% 0.02 60);    /* Light Creamy text */
+  --color-neutral-content: oklch(15% 0.02 35);
+
+  /* Feedback */
+  --color-success: oklch(65% 0.15 145);
+  --color-error: oklch(55% 0.2 30);
+  --color-warning: oklch(75% 0.15 85);
+  --color-info: oklch(70% 0.1 235);
+}
+
+/* Custom Variant for Dark Mode toggling */
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
+/* Global Styles (Optional) */
+@layer base {
+  body {
+    @apply antialiased transition-colors duration-300;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }
