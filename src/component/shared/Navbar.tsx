@@ -1,16 +1,15 @@
 "use client";
 import Image from "next/image";
-import Link from "next/link"; // Link ইম্পোর্ট করুন
-import { usePathname } from "next/navigation"; // একটিভ লিঙ্ক দেখানোর জন্য
+import Link from "next/link"; 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Container from "./Container";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const pathname = usePathname(); // বর্তমান URL পাথ
+  const pathname = usePathname(); 
 
-  // মেনু ডাটা (সহজেই পরিবর্তনযোগ্য)
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Menu", href: "/menu" },
