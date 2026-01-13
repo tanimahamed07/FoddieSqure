@@ -3,6 +3,7 @@
 @plugin "daisyui" {
   themes: light --default, dark;
 }
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 @plugin "daisyui/theme" {
   name: "light";
@@ -33,7 +34,8 @@
   name: "dark";
 
   /* Brand Colors */
-  --color-primary: oklch(65% 0.16 35);    /* Brightened Terracotta */
+  --color-primary: oklch(65% 0.16 35);   
+  /* --color-primary: yellow;    Brightened Terracotta */
   --color-secondary: oklch(82% 0.1 80);    /* Soft Gold */
   --color-accent: oklch(75% 0.1 150);     /* Pale Sage Green */
 
@@ -54,7 +56,6 @@
 }
 
 /* Custom Variant for Dark Mode toggling */
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
 /* Global Styles (Optional) */
 @layer base {
