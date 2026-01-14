@@ -9,12 +9,13 @@ import { useSession, signOut } from "next-auth/react";
 const Navbar = () => {
   const { data: session } = useSession();
   const isLoggedIn = !!session?.user; 
+  // সেশন থেকে রোল চেক করা হচ্ছে
+  const isAdmin = session?.user?.role === "admin";
   
   const [isScrolled, setIsScrolled] = useState(false);
   const [theme, setTheme] = useState("light");
   const pathname = usePathname();
 
-  // থিম এবং স্ক্রল কন্ট্রোল (আপনার আগের কোড অনুযায়ী)
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") || "light";
     setTheme(storedTheme);
@@ -26,7 +27,7 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleTheme = (checked) => {
+  const handleTheme = (checked: boolean) => {
     const newTheme = checked ? "dark" : "light";
     setTheme(newTheme);
     const html = document.querySelector("html");
@@ -34,7 +35,6 @@ const Navbar = () => {
     localStorage.setItem("theme", newTheme);
   };
 
-  // --- নবলিঙ্ক সেটআপ ---
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Menu", href: "/menu" },
@@ -42,7 +42,6 @@ const Navbar = () => {
     { name: "About", href: "/about" },
   ];
 
-  // লগইন থাকলে ড্যাশবোর্ড লিঙ্ক যুক্ত হবে (সার্ভার সাইড রোল চেক করা ভালো, এখানে সিম্পল রাখা হয়েছে)
   if (isLoggedIn) {
     navLinks.push({ name: "Dashboard", href: "/dashboard" });
   }
@@ -59,17 +58,26 @@ const Navbar = () => {
               <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden p-0 mr-2">
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h8m-8 6h16" /></svg>
               </div>
-              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-3 shadow-2xl bg-base-100 rounded-2xl w-52 border border-base-200">
+              <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-3 shadow-2xl bg-base-100 rounded-2xl w-52 border border-base-200 font-bold">
                 {navLinks.map((link) => (
                   <li key={link.href}><Link href={link.href}>{link.name}</Link></li>
                 ))}
+                {/* Mobile এও কন্ডিশনাল বাটন */}
+                <div className="mt-2 pt-2 border-t border-base-200">
+                  {isAdmin ? (
+                    <Link href="/dashboard/reservations" className="text-secondary">Reservations</Link>
+                  ) : (
+                    <Link href="/book-table" className="text-primary">Book Table</Link>
+                  )}
+                </div>
               </ul>
             </div>
+            
             <Link href="/" className="flex items-center gap-2">
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg">
                 <span className="text-white font-bold text-xl italic">R</span>
               </div>
-              <span className="text-xl font-bold tracking-tighter hidden sm:block uppercase">Foodie<span className="text-primary">Square</span></span>
+              <span className="text-xl font-bold tracking-tighter hidden sm:block uppercase italic">Foodie<span className="text-primary">Square</span></span>
             </Link>
           </div>
 
@@ -101,11 +109,11 @@ const Navbar = () => {
               <div className="dropdown dropdown-end">
                 <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar border-2 border-primary/30">
                   <div className="w-10 rounded-full">
-                    <Image width={50} height={50} alt="Profile" src={session?.user?.image || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"} />
+                    <Image width={50} height={50} alt="Profile" src={session?.user?.image || "https://ui-avatars.com/api/?name=User"} unoptimized />
                   </div>
                 </div>
                 <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow-2xl bg-base-100 rounded-box w-52 border border-base-200">
-                  <li className="px-4 py-2 font-bold text-primary border-b border-base-200">{session?.user?.name}</li>
+                  <li className="px-4 py-2 font-bold text-primary border-b border-base-200 truncate">{session?.user?.name}</li>
                   <li><Link href="/dashboard">Dashboard</Link></li>
                   <li><button className="text-error" onClick={() => signOut()}>Logout</button></li>
                 </ul>
@@ -114,7 +122,17 @@ const Navbar = () => {
               <Link href="/login" className="btn btn-ghost btn-sm font-semibold">Login</Link>
             )}
 
-            <Link href="/book-table" className="btn btn-primary rounded-full px-6 shadow-lg hidden sm:flex">Book Table</Link>
+            {/* --- মেইন কন্ডিশনাল বাটন --- */}
+            {isAdmin ? (
+              <Link href="/dashboard/reservations" className="btn btn-primary rounded-full px-6 shadow-lg hidden sm:flex font-bold">
+                Reservations
+              </Link>
+            ) : (
+              <Link href="/book-table" className="btn btn-primary rounded-full px-6 shadow-lg hidden sm:flex font-bold">
+                Book Table
+              </Link>
+            )}
+            
           </div>
         </div>
       </Container>

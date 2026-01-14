@@ -71,7 +71,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     },
     {
       name: "Profile Settings",
-      href: "dashboard/profile",
+      href: "/dashboard/profile",
       icon: <HiOutlineCog />,
     },
   ];
