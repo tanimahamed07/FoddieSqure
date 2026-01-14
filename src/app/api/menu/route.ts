@@ -1,6 +1,7 @@
 import { mongoConnect } from "@/lib/mongoConnect";
+import { TMenu } from "@/types/menu";
 // import { TEvent } from "@/types/event";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 // GET all events
 export async function GET() {
@@ -35,35 +36,30 @@ export async function GET() {
 }
 
 // POST new event
-// export async function POST(req: NextRequest) {
-//   try {
-//     const { db, client } = await mongoConnect();
-//     const data: TEvent = await req.json();
+export async function POST(req: NextRequest) {
+  try {
+    const { db } = await mongoConnect();
+    const data = await req.json();
 
-//     // Basic validation
-//     if (!data.title || !data.date || !data.location) {
-//       client.close();
-//       return NextResponse.json(
-//         { error: "Title, date, and location required" },
-//         { status: 400 }
-//       );
-//     }
 
-//     const result = await db.collection("events").insertOne({
-//       ...data,
-//       createdAt: new Date(),
-//     });
+    if (!data.name || !data.price || !data.category || !data.image) {
+      return NextResponse.json(
+        { error: "Name, Price, Category and Image are required" },
+        { status: 400 }
+      );
+    }
 
-//     // client.close();
-//     return NextResponse.json(
-//       { message: "Event created", id: result.insertedId },
-//       { status: 201 }
-//     );
-//   } catch (error) {
-//     console.error(error);
-//     return NextResponse.json(
-//       { error: "Failed to create event" },
-//       { status: 500 }
-//     );
-//   }
-// }
+    const result = await db.collection("menu").insertOne({
+      ...data,
+      createdAt: new Date(),
+    });
+
+    return NextResponse.json(
+      { message: "Dish added successfully", id: result.insertedId },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error(error);
+    return NextResponse.json({ error: "Failed to create menu item" }, { status: 500 });
+  }
+}

@@ -26,7 +26,6 @@ export const authOptions: NextAuthOptions = {
           email: credentials.email,
         });
 
-
         if (!user || !user.password) {
           throw new Error("No account found with this email. Please log in with Google.");
         }
@@ -67,7 +66,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!existingUser) {
-          const result = await userCollection.insertOne({
+          await userCollection.insertOne({
             name: user.name,
             email: user.email,
             image: user.image,
@@ -76,14 +75,13 @@ export const authOptions: NextAuthOptions = {
             provider: "google",
             createdAt: new Date(),
           });
+          // New User Role
           user.role = "user";
-          user.phone = "Not Provided";
         } else {
-          // যদি আগে থেকেই Credentials দিয়ে একাউন্ট করা থাকে, তবে তাকে ঐ একাউন্টেই লগইন করতে দাও
+          // Existing User Role from DB
           user.role = existingUser.role || "user";
           user.phone = existingUser.phone || "Not Provided";
-          
-          // ঐচ্ছিক: চাইলে ইউজারের গুগল ইমেজ দিয়ে ডাটাবেস আপডেট করতে পারেন
+
           await userCollection.updateOne(
             { email: user.email },
             { $set: { image: user.image } }
@@ -93,18 +91,30 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
 
-    async jwt({ token, user }) {
-      // লগইনের সময় ডাটা টোকেনে পাস করা
+    async jwt({ token, user, trigger }) {
+      // ১. লগইন করার সময় টোকেনে ডেটা রাখা
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.phone = user.phone;
       }
+
+      // ২. ডাটাবেস থেকে লেটেস্ট রোল আপডেট (অটোমেটিক আপডেট লজিক)
+      // যদি ইউজার ইতিমধ্যে লগইন থাকে, তবে প্রতিবার টোকেন ভ্যালিডেশনের সময় ডিবি চেক করবে
+      if (!user && token?.email) {
+        const { db } = await mongoConnect();
+        const dbUser = await db.collection("user").findOne({ email: token.email });
+        if (dbUser) {
+          token.role = dbUser.role; // DB থেকে লেটেস্ট রোল সিঙ্ক হবে
+          token.phone = dbUser.phone;
+        }
+      }
+
       return token;
     },
 
     async session({ session, token }) {
-      // টোকেন থেকে ডাটা সেশনে পাস করা যাতে useSession() এ পাওয়া যায়
+      // টোকেন থেকে সেশনে ডেটা পাস করা
       if (session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
@@ -120,4 +130,5 @@ export const authOptions: NextAuthOptions = {
 
   secret: process.env.NEXTAUTH_SECRET,
 };
+
 export default authOptions;

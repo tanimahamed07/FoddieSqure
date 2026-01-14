@@ -5,64 +5,113 @@ import { usePathname } from "next/navigation";
 import Container from "@/component/shared/Container";
 
 // React Icons Imports
-import { 
-  HiOutlineViewGrid, 
-  HiOutlineMenuAlt2, 
-  HiOutlineUserGroup, 
-  HiOutlineCalendar, 
+import {
+  HiOutlineViewGrid,
+  HiOutlineMenuAlt2,
+  HiOutlineUserGroup,
+  HiOutlineCalendar,
   HiOutlineLogout,
   HiOutlineCog,
   HiOutlineHome,
   HiOutlineCreditCard,
-  HiOutlineUserCircle
+  HiOutlineUserCircle,
 } from "react-icons/hi";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
+import { useSession } from "next-auth/react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
-  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const { data: session } = useSession();
+  console.log(session?.user?.role);
 
-   const theme = localStorage.getItem("theme") || "light";
-  
-  // মোবাইল মেনুর জন্য State
+  const [isSidebarOpen, setSidebarOpen] = useState(false);
+  const [theme, setTheme] = useState("light");
 
   useEffect(() => {
+    const storedTheme = localStorage.getItem("theme");
+    // চেক করা হচ্ছে থিমটি 'dark' কি না
+    if (storedTheme === "dark") {
+      setTheme("dark");
+      document.querySelector("html")?.setAttribute("data-theme", "dark");
+    }
+  }, []);
+
+  const handleTheme = (checked) => {
+    const newTheme = checked ? "dark" : "light";
+    setTheme(newTheme);
+
     const html = document.querySelector("html");
-    html.setAttribute("data-theme", theme);
-  }, [theme]);
-  
+    if (newTheme === "dark") {
+      html?.setAttribute("data-theme", "dark");
+      localStorage.setItem("theme", "dark"); // dark হলে সেভ হবে
+    } else {
+      html?.removeAttribute("data-theme");
+      localStorage.removeItem("theme"); // light হলে বা দরকার না হলে রিমুভ করে দিতে পারেন
+    }
+  };
   // রোল অনুযায়ী লিঙ্ক সেট করা
-  const isAdmin = pathname.startsWith("/admin");
+  const isAdmin = session?.user?.role === "admin";
 
   const adminLinks = [
     { name: "Overview", href: "/admin/dashboard", icon: <HiOutlineViewGrid /> },
-    { name: "Manage Menu", href: "/admin/manage-menu", icon: <MdOutlineRestaurantMenu /> },
-    { name: "Reservations", href: "/admin/reservations", icon: <HiOutlineCalendar /> },
-    { name: "User Management", href: "/admin/users", icon: <HiOutlineUserGroup /> },
-    { name: "Profile Settings", href: "/admin/dashboard/profile", icon: <HiOutlineCog /> },
+    {
+      name: "Manage Menu",
+      href: "/dashboard/manage-menu",
+      icon: <MdOutlineRestaurantMenu />,
+    },
+    {
+      name: "Reservations",
+      href: "/dashboard/reservations",
+      icon: <HiOutlineCalendar />,
+    },
+    {
+      name: "User Management",
+      href: "/dashboard/users",
+      icon: <HiOutlineUserGroup />,
+    },
+    {
+      name: "Profile Settings",
+      href: "dashboard/profile",
+      icon: <HiOutlineCog />,
+    },
   ];
 
   const userLinks = [
     { name: "Overview", href: "/dashboard", icon: <HiOutlineHome /> },
-    { name: "My Bookings", href: "/dashboard/my-bookings", icon: <HiOutlineCalendar /> },
-    { name: "Payment History", href: "/dashboard/payments", icon: <HiOutlineCreditCard /> },
-    { name: "Profile Settings", href: "/dashboard/profile", icon: <HiOutlineUserCircle /> },
+    {
+      name: "My Bookings",
+      href: "/dashboard/my-bookings",
+      icon: <HiOutlineCalendar />,
+    },
+    {
+      name: "Payment History",
+      href: "/dashboard/payments",
+      icon: <HiOutlineCreditCard />,
+    },
+    {
+      name: "Profile Settings",
+      href: "/dashboard/profile",
+      icon: <HiOutlineUserCircle />,
+    },
   ];
 
   const links = isAdmin ? adminLinks : userLinks;
 
   return (
     <main className="min-h-screen bg-base-100 flex flex-col lg:flex-row">
-      {/* --- Sidebar --- */}
+    {/* --- Sidebar --- */}
       <aside
-        className={`fixed inset-y-0 left-0 z-40 w-72 bg-base-200 border-r border-base-content/5 transition-transform duration-300 lg:translate-x-0 lg:static ${
+        className={`fixed inset-y-0 left-0 z-40 w-72 bg-base-200 border-r border-base-content/5 transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="h-full flex flex-col p-6">
           {/* Dashboard Header - Logo Replaced Here */}
           <div className="mb-10">
-            <Link href="/" className="flex items-center gap-2 group transition-transform active:scale-95">
+            <Link
+              href="/"
+              className="flex items-center gap-2 group transition-transform active:scale-95"
+            >
               <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center shadow-lg group-hover:rotate-12 transition-transform duration-500">
                 <span className="text-white font-bold text-xl italic">R</span>
               </div>
@@ -137,9 +186,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           </Container>
         </section>
       </div>
-      
+
       {isSidebarOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/40 z-30 lg:hidden backdrop-blur-sm transition-opacity"
           onClick={() => setSidebarOpen(false)}
         ></div>

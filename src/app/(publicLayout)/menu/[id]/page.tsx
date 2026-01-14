@@ -9,6 +9,16 @@ import Link from "next/link";
 type TParams = Promise<{ id: string }>;
 
 const MenuDetailsPage = async ({ params }: { params: TParams }) => {
+  const getSafeImageUrl = (url: string) => {
+  if (!url) return "https://placehold.co/400x400?text=No+Image";
+  try {
+    new URL(url); // এটি চেক করে URL-এ http:// বা https:// আছে কি না
+    return url;
+  } catch (e) {
+    // যদি URL ভুল হয় (যেমন: শুধু "image.jpg" লেখা), তবে এই প্লেসহোল্ডারটি দেখাবে
+    return "https://placehold.co/400x400?text=Invalid+URL";
+  }
+};
   const { id } = await params;
   const item = await getMenuDetails(id);
   console.log(item)
@@ -39,7 +49,7 @@ const MenuDetailsPage = async ({ params }: { params: TParams }) => {
                 {/* Main Image Frame - ItemsCard এর মত বর্ডার এবং শ্যাডো */}
                 <div className="relative rounded-[2.5rem] overflow-hidden border-8 border-base-200 shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 bg-base-300 aspect-square">
                   <Image
-                    src={item.image}
+                    src={getSafeImageUrl(item.image)} // এখানে ফাংশনটি কল করা হয়েছে
                     alt={item.name}
                     fill
                     priority

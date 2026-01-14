@@ -6,10 +6,16 @@ export interface TMenu {
   price: number;
   category: string;
   tags: string[];
-  image: string;
+  ingredients: string[]; // যুক্ত করা হয়েছে
   rating: number;
   reviewCount: number;
   isAvailable: boolean;
   isSpecial: boolean;
   preparationTime: string;
+  nutrition: {           // যুক্ত করা হয়েছে
+    calories: number;
+    protein: string;
+    fat: string;
+    carbs: string;
+  };
 }

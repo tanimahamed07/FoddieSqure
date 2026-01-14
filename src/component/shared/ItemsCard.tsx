@@ -8,6 +8,17 @@ type Props = {
 };
 
 const ItemsCard = ({ item }: Props) => {
+
+    const getSafeImageUrl = (url: string) => {
+    if (!url) return "https://placehold.co/400x400?text=No+Image";
+    try {
+      new URL(url); // এটি চেক করে URL-এ http:// বা https:// আছে কি না
+      return url;
+    } catch (e) {
+      // যদি URL ভুল হয় (যেমন: শুধু "image.jpg" লেখা), তবে এই প্লেসহোল্ডারটি দেখাবে
+      return "https://placehold.co/400x400?text=Invalid+URL";
+    }
+  };
   return (
     <div
       key={item.slug}
@@ -20,7 +31,7 @@ const ItemsCard = ({ item }: Props) => {
         <Image
           width={400}
           height={400}
-          src={item.image}
+          src={getSafeImageUrl(item?.image)}
           alt={item.name}
           className={`w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ${
             !item.isAvailable ? "grayscale" : ""
