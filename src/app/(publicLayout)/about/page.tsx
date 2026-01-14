@@ -238,7 +238,6 @@ const AboutPage = () => {
       {/* --- Section 4: Final Call to Action (Consistent with Menu Details) --- */}
       <section className="py-16 lg:py-20">
         <Container>
-          {/* কার্ডের ব্যাকগ্রাউন্ড হিসেবে 'neutral' ব্যবহার করা হয়েছে যা আপনার থিম অনুযায়ী ডার্ক চকোলেট/ক্রিমি টেক্সট কম্বিনেশন দিবে */}
           <div className="bg-neutral rounded-[2.5rem] lg:rounded-[3.5rem] p-10 lg:p-16 text-center space-y-8 relative overflow-hidden shadow-2xl group border border-base-content/5">
             {/* Background Decorative Blurs - Opacity adjusted for readability */}
             <div className="absolute top-0 right-0 w-80 h-80 bg-primary/20 rounded-full -mr-20 -mt-20 blur-[100px] pointer-events-none"></div>

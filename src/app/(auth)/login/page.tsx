@@ -2,27 +2,33 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Container from "@/component/shared/Container";
-import { useForm } from "react-hook-form";
-import { useSearchParams, useRouter } from "next/navigation"; // useRouter এখান থেকে হবে
-import { signIn } from "next-auth/react"; // signIn ইম্পোর্ট করতে হবে
+import { useForm, SubmitHandler } from "react-hook-form"; // SubmitHandler যোগ করা হয়েছে
+import { useSearchParams, useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
+import GoogleButton from "@/component/auth/GoogleButto";
+
+interface LoginFormInputs {
+  email: string;
+  password: string;
+}
 
 const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-  
+
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm<LoginFormInputs>();
 
-  const onSubmit = async (data: any) => { 
+  const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setIsLoading(true);
-    const { email, password } = data; 
+    const { email, password } = data;
 
     try {
       const result = await signIn("credentials", {
@@ -32,16 +38,24 @@ const LoginPage = () => {
         callbackUrl,
       });
 
-      if (!result?.error) {
+      if (result?.ok) {
         Swal.fire({
           icon: "success",
           title: "Login Successful",
           showConfirmButton: false,
           timer: 1500,
         });
-        // router.push(result?.url || callbackUrl);
+
+        // লগইন সফল হলে রিডাইরেক্ট এবং স্টেট রিফ্রেশ
+        router.push(callbackUrl);
+        router.refresh();
       } else {
-        Swal.fire("Error", "Invalid email or password", "error");
+        // NextAuth-এর authorize থেকে আসা এরর মেসেজ দেখানো
+        Swal.fire(
+          "Error",
+          result?.error || "Invalid email or password",
+          "error"
+        );
       }
     } catch (error) {
       console.error("Login error:", error);
@@ -60,54 +74,79 @@ const LoginPage = () => {
       <Container>
         <div className="relative z-10 w-full max-w-md mx-auto">
           <div className="bg-base-100/80 backdrop-blur-xl border border-base-300 rounded-[2.5rem] p-8 lg:p-10 shadow-2xl">
-            
             <div className="text-center mb-8">
-              <Link href="/" className="inline-flex items-center gap-2 mb-4 group">
+              <Link
+                href="/"
+                className="inline-flex items-center gap-2 mb-4 group"
+              >
                 <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center shadow-lg shadow-primary/30 group-hover:rotate-12 transition-transform">
-                  <span className="text-white font-bold text-2xl italic">R</span>
+                  <span className="text-white font-bold text-2xl italic">
+                    R
+                  </span>
                 </div>
               </Link>
               <h1 className="text-3xl font-extrabold text-neutral tracking-tight">
                 Welcome <span className="text-primary italic">Back</span>
               </h1>
-              <p className="text-neutral/50 text-sm mt-2 font-medium">Please enter your details</p>
+              <p className="text-neutral/50 text-sm mt-2 font-medium">
+                Please enter your details
+              </p>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="form-control w-full">
-                <label className="label font-semibold text-neutral/70">Email Address</label>
+                <label className="label font-semibold text-neutral/70">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   placeholder="john@example.com"
-                  className={`input input-bordered w-full rounded-2xl bg-base-200/50 focus:input-primary transition-all ${errors.email ? "input-error" : ""}`}
-                  {...register("email", { 
-                    required: "Email is required", 
-                    pattern: { value: /^\S+@\S+$/i, message: "Invalid email address" } 
+                  className={`input input-bordered w-full rounded-2xl bg-base-200/50 focus:input-primary transition-all ${
+                    errors.email ? "input-error" : ""
+                  }`}
+                  {...register("email", {
+                    required: "Email is required",
+                    pattern: {
+                      value: /^\S+@\S+$/i,
+                      message: "Invalid email address",
+                    },
                   })}
                 />
-                {errors.email && <span className="text-error text-xs mt-1 px-1">{errors.email.message as string}</span>}
+                {errors.email && (
+                  <span className="text-error text-xs mt-1 px-1">
+                    {errors.email.message}
+                  </span>
+                )}
               </div>
 
               <div className="form-control w-full">
                 <div className="flex justify-between items-center">
-                  <label className="label font-semibold text-neutral/70">Password</label>
-                  <Link href="#" className="text-xs text-primary font-bold hover:underline">Forgot?</Link>
+                  <label className="label font-semibold text-neutral/70">
+                    Password
+                  </label>
+                  <Link
+                    href="#"
+                    className="text-xs text-primary font-bold hover:underline"
+                  >
+                    Forgot?
+                  </Link>
                 </div>
                 <input
                   type="password"
                   placeholder="••••••••"
-                  className={`input input-bordered w-full rounded-2xl bg-base-200/50 focus:input-primary transition-all ${errors.password ? "input-error" : ""}`}
-                  {...register("password", { 
+                  className={`input input-bordered w-full rounded-2xl bg-base-200/50 focus:input-primary transition-all ${
+                    errors.password ? "input-error" : ""
+                  }`}
+                  {...register("password", {
                     required: "Password is required",
-                    minLength: { value: 6, message: "Minimum 6 characters" }
+                    minLength: { value: 6, message: "Minimum 6 characters" },
                   })}
                 />
-                {errors.password && <span className="text-error text-xs mt-1 px-1">{errors.password.message as string}</span>}
-              </div>
-
-              <div className="flex items-center gap-2 px-1">
-                <input type="checkbox" className="checkbox checkbox-primary checkbox-sm rounded-md" id="remember" />
-                <label htmlFor="remember" className="text-sm text-neutral/60 cursor-pointer">Remember me</label>
+                {errors.password && (
+                  <span className="text-error text-xs mt-1 px-1">
+                    {errors.password.message}
+                  </span>
+                )}
               </div>
 
               <button
@@ -115,24 +154,25 @@ const LoginPage = () => {
                 disabled={isLoading}
                 className="btn btn-primary w-full rounded-2xl shadow-lg shadow-primary/20 text-white mt-4 h-14 normal-case text-lg"
               >
-                {isLoading ? <span className="loading loading-spinner"></span> : "Sign In"}
+                {isLoading ? (
+                  <span className="loading loading-spinner"></span>
+                ) : (
+                  "Sign In"
+                )}
               </button>
 
-              <div className="divider text-xs text-neutral/30 font-bold uppercase py-2">Or continue with</div>
-
-              <button 
-                type="button" 
-                onClick={() => signIn('google', { callbackUrl })}
-                className="btn btn-outline border-base-300 w-full rounded-2xl hover:bg-base-200 hover:text-neutral normal-case"
-              >
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5 mr-2" alt="Google" />
-                Login with Google
-              </button>
+              <div className="divider text-xs text-neutral/30 font-bold uppercase py-2">
+                Or continue with
+              </div>
             </form>
+            <GoogleButton />
 
             <p className="text-center mt-8 text-sm text-neutral/60 font-medium">
               Don't have an account?{" "}
-              <Link href="/register" className="text-primary font-bold hover:underline">
+              <Link
+                href="/register"
+                className="text-primary font-bold hover:underline"
+              >
                 Create one now
               </Link>
             </p>
