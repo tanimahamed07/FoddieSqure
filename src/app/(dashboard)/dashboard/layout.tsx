@@ -84,11 +84,6 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       icon: <HiOutlineCalendar />,
     },
     {
-      name: "Payment History",
-      href: "/dashboard/payments",
-      icon: <HiOutlineCreditCard />,
-    },
-    {
       name: "Profile Settings",
       href: "/dashboard/profile",
       icon: <HiOutlineUserCircle />,
