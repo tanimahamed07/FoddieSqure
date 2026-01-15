@@ -8,6 +8,7 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
     CredentialsProvider({
@@ -27,7 +28,9 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          throw new Error("No account found with this email. Please log in with Google.");
+          throw new Error(
+            "No account found with this email. Please log in with Google."
+          );
         }
 
         const isPasswordValid = await bcrypt.compare(
@@ -48,7 +51,6 @@ export const authOptions: NextAuthOptions = {
         };
       },
     }),
-
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
@@ -92,20 +94,19 @@ export const authOptions: NextAuthOptions = {
     },
 
     async jwt({ token, user, trigger }) {
-      // ১. লগইন করার সময় টোকেনে ডেটা রাখা
       if (user) {
         token.id = user.id;
         token.role = user.role;
         token.phone = user.phone;
       }
 
-      // ২. ডাটাবেস থেকে লেটেস্ট রোল আপডেট (অটোমেটিক আপডেট লজিক)
-      // যদি ইউজার ইতিমধ্যে লগইন থাকে, তবে প্রতিবার টোকেন ভ্যালিডেশনের সময় ডিবি চেক করবে
       if (!user && token?.email) {
         const { db } = await mongoConnect();
-        const dbUser = await db.collection("user").findOne({ email: token.email });
+        const dbUser = await db
+          .collection("user")
+          .findOne({ email: token.email });
         if (dbUser) {
-          token.role = dbUser.role; // DB থেকে লেটেস্ট রোল সিঙ্ক হবে
+          token.role = dbUser.role;
           token.phone = dbUser.phone;
         }
       }
@@ -114,9 +115,7 @@ export const authOptions: NextAuthOptions = {
     },
 
     async session({ session, token }) {
-      // টোকেন থেকে সেশনে ডেটা পাস করা
       if (session.user) {
-        session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.phone = token.phone as string;
       }
@@ -127,8 +126,6 @@ export const authOptions: NextAuthOptions = {
   pages: {
     signIn: "/login",
   },
-
-  secret: process.env.NEXTAUTH_SECRET,
 };
 
 export default authOptions;

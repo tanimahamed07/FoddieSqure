@@ -1,13 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import {
-  ChevronLeft,
-  Save,
-  ImagePlus,
-  Loader2,
-  Utensils,
-  Zap,
-} from "lucide-react";
+import { ChevronLeft, Save, ImagePlus, Loader2, Zap } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
@@ -16,20 +9,14 @@ const AddMenuPage = () => {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  // ... অন্য ইমপোর্ট
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
-    // ১. সাবমিট করার সময় একটি ছোট লোডিং ইন্ডিকেটর (ঐচ্ছিক)
-    // toast.loading ব্যবহার করতে পারেন অথবা সরাসরি API কল করতে পারেন।
 
     const formData = new FormData(e.currentTarget);
     const rawData = Object.fromEntries(formData.entries());
 
     const finalData = {
-      // ... আপনার আগের ডাটা স্ট্রাকচার
       name: rawData.name,
       slug: rawData.name.toString().toLowerCase().replace(/\s+/g, "-"),
       description: rawData.description,
@@ -217,9 +204,11 @@ const AddMenuPage = () => {
                 className="select select-bordered rounded-2xl font-bold"
               >
                 <option>Pizza</option>
-                <option>Burger</option>
-                <option>Pasta</option>
                 <option>Dessert</option>
+                <option>Starter</option>
+                <option>Pasta</option>
+                <option>Drink</option>
+                <option>Main Course</option>
               </select>
             </div>
           </div>

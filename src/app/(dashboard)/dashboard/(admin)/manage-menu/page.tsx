@@ -37,12 +37,17 @@ const ManageMenuPage = () => {
       text: "You won't be able to revert this dish!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#f87272", // error color
-      cancelButtonColor: "#a6adbb", // neutral color
+      confirmButtonColor: "#f87272", 
+      cancelButtonColor: "#a6adbb", 
       confirmButtonText: "Yes, delete it!",
-      background: "#1d232a", // আপনার থিমের সাথে মিল রেখে (ডার্ক মোড হলে)
+      background: "#1d232a", 
       color: "#ffffff",
-      borderRadius: "2rem",
+      // ✅ borderRadius সরিয়ে customClass ব্যবহার করা হয়েছে
+      customClass: {
+        popup: "rounded-[2rem]",
+        confirmButton: "rounded-xl",
+        cancelButton: "rounded-xl"
+      }
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
@@ -50,7 +55,6 @@ const ManageMenuPage = () => {
           if (res.ok) {
             setMenuItems(menuItems.filter((item: any) => item.id !== id));
             
-            // সফল হওয়ার পর ছোট একটি সাকসেস এলার্ট
             Swal.fire({
               title: "Deleted!",
               text: "The dish has been removed.",
@@ -59,7 +63,10 @@ const ManageMenuPage = () => {
               showConfirmButton: false,
               background: "#1d232a",
               color: "#ffffff",
-              borderRadius: "2rem",
+              // ✅ এখানেও customClass ব্যবহার করা হয়েছে
+              customClass: {
+                popup: "rounded-[2rem]"
+              }
             });
           }
         } catch (error) {

@@ -33,10 +33,9 @@ const ManageUsersPage = () => {
   };
 
   // --- রোল পরিবর্তন হ্যান্ডলার (SweetAlert সহ) ---
-  const toggleRole = async (id: string, currentRole: string) => {
+ const toggleRole = async (id: string, currentRole: string) => {
     const newRole = currentRole === "admin" ? "user" : "admin";
 
-    // ১. প্রথমে কনফার্মেশন চাইবে
     Swal.fire({
       title: "Change User Role?",
       text: `Are you sure you want to change this user to ${newRole}?`,
@@ -67,7 +66,7 @@ const ManageUsersPage = () => {
               prev.map((u) => (u._id === id ? { ...u, role: newRole } : u))
             );
             
-            // ২. সফল হলে SweetAlert সাকসেস মেসেজ
+            // ✅ এখানে borderRadius সরিয়ে customClass ব্যবহার করা হয়েছে
             Swal.fire({
               title: "Updated!",
               text: `The user is now an ${newRole}.`,
@@ -76,7 +75,9 @@ const ManageUsersPage = () => {
               showConfirmButton: false,
               background: "#1d232a",
               color: "#ffffff",
-              borderRadius: "2rem",
+              customClass: {
+                popup: 'rounded-[2rem]'
+              }
             });
             toast.dismiss(tId);
           } else {

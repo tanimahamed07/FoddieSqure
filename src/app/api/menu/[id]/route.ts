@@ -2,11 +2,14 @@ import { mongoConnect } from "@/lib/mongoConnect";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+
+type RouteContext = {
+  params: Promise<{ id: string }>;
+};
+
+export async function GET(req: NextRequest, context: RouteContext) {
   try {
+    // এখানে params এখন Promise, তাই await করতে হবে
     const { id } = await context.params;
 
     const { db } = await mongoConnect();
@@ -17,7 +20,6 @@ export async function GET(
     if (!details)
       return NextResponse.json({ error: "Dish not found" }, { status: 404 });
 
-    // ফিক্স: এখানে nutrition এবং ingredients অবশ্যই যোগ করতে হবে
     const formattedDetails = {
       id: details._id.toString(),
       name: details.name,
@@ -32,7 +34,6 @@ export async function GET(
       isAvailable: details.isAvailable,
       isSpecial: details.isSpecial,
       preparationTime: details.preparationTime,
-      // --- এই ফিল্ডগুলো আপনি আগে যোগ করেননি, তাই ডাটা আসছিল না ---
       ingredients: details.ingredients || [],
       nutrition: details.nutrition || {
         calories: 0,
@@ -52,10 +53,7 @@ export async function GET(
   }
 }
 
-export async function DELETE(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function DELETE(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const { db } = await mongoConnect();
@@ -74,16 +72,13 @@ export async function DELETE(
   }
 }
 
-export async function PATCH(
-  req: NextRequest,
-  context: { params: { id: string } }
-) {
+export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const data = await req.json();
     const { db } = await mongoConnect();
 
-    // ডাটাবেস আপডেট করার আগে id সরিয়ে ফেলা (mongoDB তে id সরাসরি আপডেট করা যায় না)
+
     const { id: _, ...updateData } = data;
 
     const result = await db

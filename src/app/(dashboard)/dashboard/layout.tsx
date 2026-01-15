@@ -36,24 +36,24 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     }
   }, []);
 
-  const handleTheme = (checked) => {
+  const handleTheme = (checked: boolean) => {
     const newTheme = checked ? "dark" : "light";
     setTheme(newTheme);
 
     const html = document.querySelector("html");
     if (newTheme === "dark") {
       html?.setAttribute("data-theme", "dark");
-      localStorage.setItem("theme", "dark"); // dark হলে সেভ হবে
+      localStorage.setItem("theme", "dark");
     } else {
       html?.removeAttribute("data-theme");
-      localStorage.removeItem("theme"); // light হলে বা দরকার না হলে রিমুভ করে দিতে পারেন
+      localStorage.removeItem("theme");
     }
   };
   // রোল অনুযায়ী লিঙ্ক সেট করা
   const isAdmin = session?.user?.role === "admin";
 
   const adminLinks = [
-    { name: "Overview", href: "/admin/dashboard", icon: <HiOutlineViewGrid /> },
+    { name: "Overview", href: "/dashboard", icon: <HiOutlineViewGrid /> },
     {
       name: "Manage Menu",
       href: "/dashboard/manage-menu",
@@ -84,6 +84,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       icon: <HiOutlineCalendar />,
     },
     {
+      name: "My Favorites",
+      href: "/dashboard/my-favorites",
+      icon: <HiOutlineCalendar />,
+    },
+    {
       name: "Profile Settings",
       href: "/dashboard/profile",
       icon: <HiOutlineUserCircle />,
@@ -94,7 +99,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
   return (
     <main className="min-h-screen bg-base-100 flex flex-col lg:flex-row">
-    {/* --- Sidebar --- */}
+      {/* --- Sidebar --- */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-72 bg-base-200 border-r border-base-content/5 transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
