@@ -17,7 +17,7 @@ import { useRouter } from "next/navigation";
 const BookTablePage = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  console.log(session?.user);
+  // console.log(session?.user);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {

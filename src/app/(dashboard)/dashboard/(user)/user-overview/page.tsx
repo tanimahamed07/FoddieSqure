@@ -14,24 +14,45 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
+// ডাটার টাইপ ডিফাইন করা হয়েছে যাতে TypeScript এরর না দেয়
+interface Booking {
+  _id: string;
+  status: string;
+  date: string;
+  time: string;
+  guests: number;
+  area: string;
+  message?: string;
+}
+
+interface Favorite {
+  _id: string;
+  name: string;
+  price: string | number;
+  image: string;
+}
+
 const UserOverview = () => {
   const { data: session } = useSession();
-  const [bookings, setBookings] = useState([]);
-  const [favorites, setFavorites] = useState([]);
+  
+  // এখানে টাইপ ডিফাইন করে দেওয়া হয়েছে <Booking[]> এবং <Favorite[]>
+  const [bookings, setBookings] = useState<Booking[]>([]);
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         if (session?.user?.email) {
-          // ফেচ বুকিং ডাটা
-          const bookingRes = await fetch(`/api/booking?email=${session.user.email}`);
+          const [bookingRes, favRes] = await Promise.all([
+            fetch(`/api/booking?email=${session.user.email}`),
+            fetch(`/api/favorites`)
+          ]);
+
           const bookingData = await bookingRes.json();
-          
-          // ফেচ ফেভারিট ডাটা
-          const favRes = await fetch(`/api/favorites`); // আপনার API এন্ডপয়েন্ট অনুযায়ী
           const favData = await favRes.json();
 
+          // ডাটা অ্যারে কিনা তা চেক করে সেট করা হচ্ছে
           setBookings(Array.isArray(bookingData) ? bookingData : []);
           setFavorites(Array.isArray(favData) ? favData : []);
         }
@@ -66,9 +87,14 @@ const UserOverview = () => {
           </p>
         </div>
         <div className="flex -space-x-3">
-            {[1,2,3].map(i => (
+            {[1, 2, 3].map(i => (
                 <div key={i} className="w-10 h-10 rounded-full border-4 border-base-100 bg-base-300 flex items-center justify-center overflow-hidden">
-                    <Image src={session?.user?.image || ""} alt="user" width={40} height={40} />
+                    <Image 
+                      src={session?.user?.image || `https://ui-avatars.com/api/?name=${session?.user?.name || 'User'}`} 
+                      alt="user" 
+                      width={40} 
+                      height={40} 
+                    />
                 </div>
             ))}
             <div className="w-10 h-10 rounded-full border-4 border-base-100 bg-primary text-[10px] font-bold flex items-center justify-center text-primary-content">
@@ -82,7 +108,9 @@ const UserOverview = () => {
         <div className="bg-base-200/50 p-6 rounded-[2rem] border border-base-content/5 relative overflow-hidden group">
           <div className="relative z-10">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] opacity-50">Active Bookings</p>
-            <h3 className="text-4xl font-black mt-1">{bookings.filter(b => b.status === 'confirmed').length}</h3>
+            <h3 className="text-4xl font-black mt-1">
+                {bookings.filter(b => b.status === 'confirmed').length}
+            </h3>
           </div>
           <Calendar className="absolute right-[-10px] bottom-[-10px] w-24 h-24 text-primary/10 group-hover:rotate-12 transition-transform" />
         </div>
@@ -106,7 +134,7 @@ const UserOverview = () => {
       </div>
 
       <div className="grid lg:grid-cols-5 gap-10">
-        {/* --- Recent Reservation (Left Side - 3 cols) --- */}
+        {/* --- Recent Reservation (Left Side) --- */}
         <div className="lg:col-span-3 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-black uppercase tracking-tight">Recent <span className="text-primary italic">Reservation</span></h2>
@@ -150,7 +178,7 @@ const UserOverview = () => {
           )}
         </div>
 
-        {/* --- Top Favorites (Right Side - 2 cols) --- */}
+        {/* --- Top Favorites (Right Side) --- */}
         <div className="lg:col-span-2 space-y-6">
             <div className="flex items-center justify-between">
                 <h2 className="text-xl font-black uppercase tracking-tight">Your <span className="text-secondary italic">Favorites</span></h2>

@@ -22,13 +22,12 @@ const AdminOverview = () => {
     totalBookings: 0,
     pendingBookings: 0,
   });
-  const [recentBookings, setRecentBookings] = useState([]);
+  const [recentBookings, setRecentBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+ useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        // একাধিক API থেকে ডাটা ফেচ করা হচ্ছে
         const [userRes, menuRes, bookingRes] = await Promise.all([
           fetch("/api/register"),
           fetch("/api/menu"),
@@ -39,16 +38,23 @@ const AdminOverview = () => {
         const menu = await menuRes.json();
         const bookings = await bookingRes.json();
 
+        // Safe checks: Ensure the data is an array before processing
+        const safeUsers = Array.isArray(users) ? users : [];
+        const safeMenu = Array.isArray(menu) ? menu : [];
+        const safeBookings = Array.isArray(bookings) ? bookings : [];
+
         setStats({
-          totalUsers: users.length,
-          totalMenu: menu.length,
-          totalBookings: bookings.length,
-          pendingBookings: bookings.filter((b) => b.status === "pending").length,
+          totalUsers: safeUsers.length,
+          totalMenu: safeMenu.length,
+          totalBookings: safeBookings.length,
+          pendingBookings: safeBookings.filter((b) => b.status === "pending").length,
         });
 
-        setRecentBookings(bookings.slice(0, 5)); // সাম্প্রতিক ৫টি বুকিং
+        setRecentBookings(safeBookings.slice(0, 5)); 
       } catch (error) {
         console.error("Error loading admin stats:", error);
+        // Reset to empty states on error to prevent UI crash
+        setRecentBookings([]);
       } finally {
         setLoading(false);
       }

@@ -1,13 +1,19 @@
+
+export const dynamic = "force-dynamic";
+
 import Container from "@/component/shared/Container";
 import { TMenu } from "@/types/menu";
 import { getMenus } from "@/services/menuService";
 import MenuFilter from "@/component/menu/MenuFilter";
 
-
 const MenuPage = async () => {
-  const menus: TMenu[] = await getMenus();
+  // ডাটা ফেচ করা হচ্ছে
+  const menus: TMenu[] = (await getMenus()) || []; 
 
-  const categories = ["All", ...Array.from(new Set(menus.map(item => item.category)))];
+  const categories = [
+    "All",
+    ...Array.from(new Set(menus.map((item) => item.category))),
+  ];
 
   return (
     <main className="min-h-screen bg-base-100 transition-colors duration-500 pb-20">
@@ -40,7 +46,9 @@ const MenuPage = async () => {
               </div>
               <div className="w-px h-12 bg-base-content/10"></div>
               <div className="text-center">
-                <p className="text-3xl font-black text-primary">{categories.length - 1}</p>
+                <p className="text-3xl font-black text-primary">
+                  {categories.length > 1 ? categories.length - 1 : 0}
+                </p>
                 <p className="text-[10px] uppercase font-bold opacity-40 tracking-widest">Categories</p>
               </div>
             </div>

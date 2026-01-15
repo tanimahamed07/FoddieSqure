@@ -28,7 +28,7 @@ const Specialties = () => {
 
     fetchMenus();
   }, []);
-  console.log(menus);
+  // console.log(menus);
 
   if (loading) {
     return (

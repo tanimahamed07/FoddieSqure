@@ -1,31 +1,14 @@
 import { mongoConnect } from "@/lib/mongoConnect";
-import { TMenu } from "@/types/menu";
-// import { TEvent } from "@/types/event";
+import { revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
-// GET all events
+// GET all menu items
+import { getMenus } from "@/services/menuService";
+
 export async function GET() {
   try {
-    const { db } = await mongoConnect();
-    const items = await db.collection("menu").find().toArray();
-
-    const formattedItems = items.map((item) => ({
-      id: item._id.toString(),
-      name: item.name,
-      slug: item.slug,
-      description: item.description,
-      price: item.price,
-      category: item.category,
-      tags: item.tags,
-      image: item.image,
-      rating: item.rating,
-      reviewCount: item.reviewCount,
-      isAvailable: item.isAvailable,
-      isSpecial: item.isSpecial,
-      preparationTime: item.preparationTime,
-    }));
-
-    return NextResponse.json(formattedItems);
+    const items = await getMenus();
+    return NextResponse.json(items);
   } catch (error) {
     console.error(error);
     return NextResponse.json(
@@ -35,12 +18,13 @@ export async function GET() {
   }
 }
 
-// POST new event
+// POST new menu item
+import { revalidatePath } from "next/cache";
+
 export async function POST(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
     const data = await req.json();
-
 
     if (!data.name || !data.price || !data.category || !data.image) {
       return NextResponse.json(
@@ -54,12 +38,15 @@ export async function POST(req: NextRequest) {
       createdAt: new Date(),
     });
 
+
+    revalidatePath("/menu");
+    revalidatePath('/specialties')
+
     return NextResponse.json(
       { message: "Dish added successfully", id: result.insertedId },
       { status: 201 }
     );
   } catch (error) {
     console.error(error);
-    return NextResponse.json({ error: "Failed to create menu item" }, { status: 500 });
   }
 }

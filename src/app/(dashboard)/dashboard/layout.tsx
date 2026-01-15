@@ -22,7 +22,7 @@ import { useSession } from "next-auth/react";
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { data: session } = useSession();
-  console.log(session?.user?.role);
+  // console.log(session?.user?.role);
 
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState("light");

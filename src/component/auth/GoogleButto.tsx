@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 const GoogleButton = () => {
   const params = useSearchParams();
   const callbackUrl = params.get("callbackUrl") || "/";
-  console.log(callbackUrl);
+  // console.log(callbackUrl);
   const handleSignIn = () => {
     signIn("google", {
       callbackUrl: callbackUrl,

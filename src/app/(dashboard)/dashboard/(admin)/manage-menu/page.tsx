@@ -76,7 +76,7 @@ const ManageMenuPage = () => {
     });
   };
 
-  console.log(menuItems)
+  // console.log(menuItems)
 
   if (loading) return <div className="p-10 text-center">Loading Menu...</div>;
 

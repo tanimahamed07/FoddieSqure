@@ -1,19 +1,30 @@
 import { TMenu } from "@/types/menu";
 
-
-
 export async function getMenus(): Promise<TMenu[]> {
-  const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/menu`, {
-    cache: "no-store", // always fetch fresh data
-  });
+  try {
+    const { db } = await mongoConnect();
+    const items = await db.collection("menu").find().toArray();
 
-  if (!res.ok) {
-    throw new Error("Failed to fetch menus");
+    return items.map((item) => ({
+      id: item._id.toString(),
+      name: item.name,
+      slug: item.slug,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      tags: item.tags,
+      image: item.image,
+      rating: item.rating,
+      reviewCount: item.reviewCount,
+      isAvailable: item.isAvailable,
+      isSpecial: item.isSpecial,
+      preparationTime: item.preparationTime,
+    })) as unknown as TMenu[];
+  } catch (error) {
+    console.error("Failed to fetch menus:", error);
+    return [];
   }
-
-  return res.json();
 }
-
 
 import { mongoConnect } from "@/lib/mongoConnect";
 import { ObjectId } from "mongodb";
@@ -22,7 +33,9 @@ import { ObjectId } from "mongodb";
 export const getMenuDetails = async (id: string) => {
   try {
     const { db } = await mongoConnect();
-    const details = await db.collection("menu").findOne({ _id: new ObjectId(id) });
+    const details = await db
+      .collection("menu")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!details) return null;
 
@@ -55,4 +68,3 @@ export const getSpecialMenus = async (): Promise<TMenu[]> => {
     return [];
   }
 };
-
