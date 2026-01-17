@@ -2,7 +2,7 @@
 
 A modern, responsive restaurant website with online table booking and powerful admin dashboard for menu & reservation management.
 
-![Restaurant Homepage Preview](https://i.ibb.co.com/N6jVg3nJ/Screenshot-2026-01-17-at-11-16-29-AM.png)
+![Restaurant Homepage Preview](https://i.ibb.co.com/gbMst0K8/Screenshot-2026-01-17-at-11-19-25-AM.png)
 
 *(Add your actual screenshot here later)*
 
