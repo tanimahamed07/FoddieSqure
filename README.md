@@ -53,3 +53,36 @@ A modern, responsive restaurant website with online table booking and powerful a
 1. Clone the repository
    ```bash
    git clone https://github.com/tanimahamed07/FoddieSqure.git
+
+   ## 🎟️ Ready-to-use Test Accounts
+
+<table align="center">
+  <tr>
+    <th colspan="4" style="text-align:center; background:#10b981; color:white; padding:12px; font-size:1.2em;">
+      🚀 Live Demo Credentials – Try it now!
+    </th>
+  </tr>
+  <tr style="background:#f3f4f6;">
+    <td><strong>👤 Customer</strong></td>
+    <td><code>user@gmail.com</code></td>
+    <td><code>userrr</code></td>
+    <td>Book tables • See bookings • Write reviews • Update profile</td>
+  </tr>
+  <tr style="background:#fef3c7;">
+    <td><strong>🛡️ Admin</strong></td>
+    <td><code>admin@gmail.com</code></td>
+    <td><code>adminn</code></td>
+    <td>Manage menu • Confirm bookings • User list • Dashboard stats • Edit content</td>
+  </tr>
+</table>
+
+<p align="center">
+  <a href="http://foodiesquare.vercel.app/login">
+    <img src="https://img.shields.io/badge/LOGIN_NOW-10b981?style=for-the-badge&logo=login&logoColor=white" alt="Login Now">
+  </a>
+</p>
+
+<p align="center">
+  <strong>Pro tip:</strong> Admin dashboard has beautiful overview cards, charts & full CRUD controls — check it out! 🍽️✨
+</p>
+
