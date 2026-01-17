@@ -11,10 +11,7 @@ A modern, responsive restaurant website with online table booking and powerful a
 ### Guest / Public Features
 - Beautiful landing page with restaurant story, highlights & specialties
 - Digital menu with categories, item details, prices & images
-- Google Maps embedded location + contact information
 - User registration & login (for booking access)
-
-### Customer Features
 - Profile update (name, phone, address)
 - Table reservation: select date, time, number of guests
 - View booking history with status (Pending/Confirmed/Cancelled)
@@ -39,14 +36,10 @@ A modern, responsive restaurant website with online table booking and powerful a
 
 - **Frontend**: Next.js 15 (App Router) + React Server Components
 - **Styling**: Tailwind CSS
-- **Backend API**: Express.js (separate server or Next.js API routes)
 - **Data Storage**: JSON file (for simplicity) or MongoDB/Prisma (recommended for production)
-- **Authentication**: NextAuth.js / Clerk / JWT (your choice)
-- **UI Components**: Shadcn/ui or custom with Tailwind
-- **Form Handling**: React Hook Form + Zod (recommended)
+- **Authentication**: NextAuth.js
+- **Form Handling**: React Hook Form
 - **Notifications**: react-hot-toast (for toast messages)
-- **Icons**: lucide-react or heroicons
-- **Deployment**: Vercel (frontend) + Render/Railway (backend if separate)
 
 ## 🚀 Getting Started
 
