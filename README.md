@@ -4,7 +4,6 @@ A modern, responsive restaurant website with online table booking and powerful a
 
 ![Restaurant Homepage Preview](https://i.ibb.co.com/gbMst0K8/Screenshot-2026-01-17-at-11-19-25-AM.png)
 
-*(Add your actual screenshot here later)*
 
 ## ✨ Features Implemented
 
@@ -51,5 +50,4 @@ A modern, responsive restaurant website with online table booking and powerful a
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/your-username/restaurant-platform.git
-   cd restaurant-platform
+   git clone https://github.com/tanimahamed07/FoddieSqure.git
