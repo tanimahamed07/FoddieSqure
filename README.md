@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🍽️ Restaurant Web Platform
 
-## Getting Started
+A modern, responsive restaurant website with online table booking and powerful admin dashboard for menu & reservation management.
 
-First, run the development server:
+![Restaurant Homepage Preview](https://via.placeholder.com/1200x600?text=Restaurant+Homepage+Screenshot)  
+*(Add your actual screenshot here later)*
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## ✨ Features Implemented
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Guest / Public Features
+- Beautiful landing page with restaurant story, highlights & specialties
+- Digital menu with categories, item details, prices & images
+- Google Maps embedded location + contact information
+- User registration & login (for booking access)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Customer Features
+- Profile update (name, phone, address)
+- Table reservation: select date, time, number of guests
+- View booking history with status (Pending/Confirmed/Cancelled)
+- Basic review/rating system for dishes or experience
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### Admin / Staff Features
+- **Admin Dashboard** – Overview (total bookings, top items, stats)
+- **Menu Management** (Full CRUD)
+  - Create, edit, delete categories & menu items
+  - Toggle availability of dishes
+- **Reservation Management**
+  - View all bookings
+  - Update status: Pending → Confirmed / Cancelled
+- **User Management** – List of registered customers
+- **Content Management** (basic) – Update banners, gallery images, announcements
 
-## Learn More
+**Additional Nice-to-have (if implemented):**
+- Toast notifications on successful product/menu item creation
+- Image upload support for menu items (using cloudinary or local)
 
-To learn more about Next.js, take a look at the following resources:
+## 🛠️ Tech Stack
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Frontend**: Next.js 15 (App Router) + React Server Components
+- **Styling**: Tailwind CSS
+- **Backend API**: Express.js (separate server or Next.js API routes)
+- **Data Storage**: JSON file (for simplicity) or MongoDB/Prisma (recommended for production)
+- **Authentication**: NextAuth.js / Clerk / JWT (your choice)
+- **UI Components**: Shadcn/ui or custom with Tailwind
+- **Form Handling**: React Hook Form + Zod (recommended)
+- **Notifications**: react-hot-toast (for toast messages)
+- **Icons**: lucide-react or heroicons
+- **Deployment**: Vercel (frontend) + Render/Railway (backend if separate)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🚀 Getting Started
 
-## Deploy on Vercel
+### Prerequisites
+- Node.js ≥ 18
+- npm / pnpm / yarn
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository
+   ```bash
+   git clone https://github.com/your-username/restaurant-platform.git
+   cd restaurant-platform
