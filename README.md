@@ -2,6 +2,8 @@
 
 A modern, responsive restaurant website with online table booking and powerful admin dashboard for menu & reservation management.
 
+## Live Link: 🌐 [Live Site Link](https://lonelink1.netlify.app/)
+
 ![Restaurant Homepage Preview](https://i.ibb.co.com/gbMst0K8/Screenshot-2026-01-17-at-11-19-25-AM.png)
 
 
