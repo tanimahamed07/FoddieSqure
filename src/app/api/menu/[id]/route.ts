@@ -2,16 +2,14 @@ import { mongoConnect } from "@/lib/mongoConnect";
 import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 
-
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(req: NextRequest, context: RouteContext) {
+// Get menu item by ID
+export async function GET(_req: NextRequest, context: RouteContext) {
   try {
-    // এখানে params এখন Promise, তাই await করতে হবে
     const { id } = await context.params;
-
     const { db } = await mongoConnect();
     const details = await db
       .collection("menu")
@@ -48,12 +46,13 @@ export async function GET(req: NextRequest, context: RouteContext) {
     console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch dish" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-export async function DELETE(req: NextRequest, context: RouteContext) {
+// Delete menu item by ID
+export async function DELETE(_req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const { db } = await mongoConnect();
@@ -68,18 +67,20 @@ export async function DELETE(req: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ message: "Item deleted successfully" });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Failed to delete" }, { status: 500 });
   }
 }
 
+// Update menu item by ID
 export async function PATCH(req: NextRequest, context: RouteContext) {
   try {
     const { id } = await context.params;
     const data = await req.json();
     const { db } = await mongoConnect();
 
-
-    const { id: _, ...updateData } = data;
+    // Remove id field from update data
+    const { id: _id, ...updateData } = data;
 
     const result = await db
       .collection("menu")
@@ -91,6 +92,7 @@ export async function PATCH(req: NextRequest, context: RouteContext) {
 
     return NextResponse.json({ message: "Item updated successfully" });
   } catch (error) {
+    console.error(error);
     return NextResponse.json({ error: "Failed to update" }, { status: 500 });
   }
 }

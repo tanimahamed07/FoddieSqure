@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Container from "@/component/shared/Container";
-
-// React Icons Imports
 import {
   HiOutlineViewGrid,
   HiOutlineMenuAlt2,
@@ -13,29 +11,27 @@ import {
   HiOutlineLogout,
   HiOutlineCog,
   HiOutlineHome,
-  HiOutlineCreditCard,
   HiOutlineUserCircle,
 } from "react-icons/hi";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const pathname = usePathname();
   const { data: session } = useSession();
-  // console.log(session?.user?.role);
-
   const [isSidebarOpen, setSidebarOpen] = useState(false);
   const [theme, setTheme] = useState("light");
 
+  // Initialize theme from localStorage
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme");
-    // চেক করা হচ্ছে থিমটি 'dark' কি না
     if (storedTheme === "dark") {
       setTheme("dark");
       document.querySelector("html")?.setAttribute("data-theme", "dark");
     }
   }, []);
 
+  // Toggle theme between light and dark mode
   const handleTheme = (checked: boolean) => {
     const newTheme = checked ? "dark" : "light";
     setTheme(newTheme);
@@ -49,9 +45,11 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       localStorage.removeItem("theme");
     }
   };
-  // রোল অনুযায়ী লিঙ্ক সেট করা
+
+  // Determine user role for navigation links
   const isAdmin = session?.user?.role === "admin";
 
+  // Admin navigation links
   const adminLinks = [
     { name: "Overview", href: "/dashboard", icon: <HiOutlineViewGrid /> },
     {
@@ -76,6 +74,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     },
   ];
 
+  // User navigation links
   const userLinks = [
     { name: "Overview", href: "/dashboard", icon: <HiOutlineHome /> },
     {
@@ -95,18 +94,19 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
     },
   ];
 
+  // Select navigation links based on user role
   const links = isAdmin ? adminLinks : userLinks;
 
   return (
     <main className="min-h-screen bg-base-100 flex flex-col lg:flex-row">
-      {/* --- Sidebar --- */}
+      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-40 w-72 bg-base-200 border-r border-base-content/5 transition-transform duration-300 lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen ${
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
         <div className="h-full flex flex-col p-6">
-          {/* Dashboard Header - Logo Replaced Here */}
+          {/* Dashboard header and logo */}
           <div className="mb-10">
             <Link
               href="/"
@@ -126,7 +126,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             </Link>
           </div>
 
-          {/* Navigation Links */}
+          {/* Navigation links */}
           <nav className="flex-1 space-y-2">
             {links.map((link) => {
               const isActive = pathname === link.href;
@@ -148,9 +148,12 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
             })}
           </nav>
 
-          {/* Bottom Logout Button */}
+          {/* Logout button */}
           <div className="mt-auto pt-6 border-t border-base-content/5">
-            <button className="flex items-center gap-4 px-4 py-3 w-full rounded-2xl font-bold text-error hover:bg-error/10 transition-all group">
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="flex items-center gap-4 px-4 py-3 w-full rounded-2xl font-bold text-error hover:bg-error/10 transition-all group"
+            >
               <HiOutlineLogout className="text-2xl group-hover:translate-x-1 transition-transform" />
               <span className="text-sm uppercase tracking-widest">Logout</span>
             </button>
@@ -158,9 +161,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
       </aside>
 
-      {/* --- Main Content Area --- */}
+      {/* Main content area */}
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Mobile Header */}
+        {/* Mobile header */}
         <header className="lg:hidden flex items-center justify-between p-4 bg-base-200 border-b border-base-content/5">
           <button
             onClick={() => setSidebarOpen(!isSidebarOpen)}
@@ -174,7 +177,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           <div className="w-10"></div>
         </header>
 
-        {/* Content Section */}
+        {/* Content section */}
         <section className="p-4 lg:p-10 bg-base-100 relative overflow-hidden flex-1">
           <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-primary/5 rounded-full blur-[120px] -z-10"></div>
           <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-secondary/5 rounded-full blur-[120px] -z-10"></div>
@@ -187,6 +190,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         </section>
       </div>
 
+      {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div
           className="fixed inset-0 bg-black/40 z-30 lg:hidden backdrop-blur-sm transition-opacity"

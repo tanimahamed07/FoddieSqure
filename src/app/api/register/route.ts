@@ -1,9 +1,9 @@
 import { mongoConnect } from "@/lib/mongoConnect";
-import { ObjectId } from "mongodb"; // এটি অবশ্যই লাগবে
+import { ObjectId } from "mongodb";
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 
-
+// Register a new user
 export async function POST(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
@@ -12,7 +12,10 @@ export async function POST(req: NextRequest) {
 
     const isExisting = await db.collection("user").findOne({ email });
     if (isExisting) {
-      return NextResponse.json({ message: "Email already registered" }, { status: 400 });
+      return NextResponse.json(
+        { message: "Email already registered" },
+        { status: 400 },
+      );
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -25,24 +28,34 @@ export async function POST(req: NextRequest) {
       createdAt: new Date(),
     });
 
-    return NextResponse.json({ message: "Registered Successfully", id: result.insertedId }, { status: 201 });
+    return NextResponse.json(
+      { message: "Registered Successfully", id: result.insertedId },
+      { status: 201 },
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// ইউজার লিস্ট পাওয়া (বিদ্যমান)
+// Get all users (excluding passwords)
 export async function GET() {
   try {
     const { db } = await mongoConnect();
-    const allUsers = await db.collection("user").find({}).project({ password: 0 }).toArray();
+    const allUsers = await db
+      .collection("user")
+      .find({})
+      .project({ password: 0 })
+      .toArray();
     return NextResponse.json(allUsers);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch users" },
+      { status: 500 },
+    );
   }
 }
 
-// ২. রোল আপডেট করার জন্য PATCH মেথড (নতুন)
+// Update user role
 export async function PATCH(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
@@ -50,13 +63,15 @@ export async function PATCH(req: NextRequest) {
     const { id, role } = body;
 
     if (!id || !role) {
-      return NextResponse.json({ error: "ID and Role are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "ID and Role are required" },
+        { status: 400 },
+      );
     }
 
-    const result = await db.collection("user").updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { role: role } }
-    );
+    await db
+      .collection("user")
+      .updateOne({ _id: new ObjectId(id) }, { $set: { role: role } });
 
     return NextResponse.json({ message: "Role updated" });
   } catch (error: any) {
@@ -64,18 +79,21 @@ export async function PATCH(req: NextRequest) {
   }
 }
 
-// ৩. ইউজার ডিলিট করার জন্য DELETE মেথড (নতুন)
+// Delete a user by ID
 export async function DELETE(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
     const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id"); // URL থেকে আইডি নিচ্ছে
+    const id = searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "User ID is required" },
+        { status: 400 },
+      );
     }
 
-    const result = await db.collection("user").deleteOne({ _id: new ObjectId(id) });
+    await db.collection("user").deleteOne({ _id: new ObjectId(id) });
 
     return NextResponse.json({ message: "User deleted" });
   } catch (error: any) {

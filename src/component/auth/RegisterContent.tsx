@@ -28,6 +28,7 @@ const RegisterContent = () => {
 
   const password = watch("password");
 
+  // Handle form submission
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
     try {
@@ -38,7 +39,7 @@ const RegisterContent = () => {
           name: data.name,
           email: data.email,
           password: data.password,
-          phone: data.phone, // ডাটাবেসে এই নামে সেভ হবে
+          phone: data.phone,
         }),
       });
 
@@ -64,9 +65,45 @@ const RegisterContent = () => {
       setIsLoading(false);
     }
   };
+
+  // Handle demo registration
+  const handleDemoRegister = async (role: "admin" | "user") => {
+    const email = role === "admin" ? "admin@admin.com" : "user@user.com";
+    const password = "123456";
+
+    setIsLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl: "/",
+      });
+
+      if (result?.ok) {
+        Swal.fire({
+          icon: "success",
+          title: `Demo ${role.charAt(0).toUpperCase() + role.slice(1)} Login Successful`,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        router.push("/");
+        router.refresh();
+      } else {
+        Swal.fire("Error", result?.error || "Demo login failed", "error");
+      }
+    } catch (error) {
+      console.error("Demo login error:", error);
+      Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-base-100 py-16 px-4">
-      {/* Background */}
+      {/* Background blur effects */}
       <div className="absolute top-[-5%] right-[-5%] w-80 h-80 bg-secondary/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-[-5%] left-[-5%] w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
 
@@ -226,8 +263,32 @@ const RegisterContent = () => {
                   "Create My Account"
                 )}
               </button>
+
+              {/* Demo register buttons */}
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => handleDemoRegister("admin")}
+                  disabled={isLoading}
+                  className="btn btn-outline btn-secondary rounded-2xl normal-case font-bold"
+                >
+                  Demo Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoRegister("user")}
+                  disabled={isLoading}
+                  className="btn btn-outline btn-accent rounded-2xl normal-case font-bold"
+                >
+                  Demo User
+                </button>
+              </div>
+
+              <div className="divider text-xs text-neutral/30 font-bold uppercase py-2">
+                Or continue with
+              </div>
             </form>
-            <GoogleButton></GoogleButton>
+            <GoogleButton />
 
             {/* Footer */}
             <p className="text-center mt-8 text-sm text-neutral/60 font-medium">

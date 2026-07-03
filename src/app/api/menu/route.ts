@@ -1,10 +1,9 @@
 import { mongoConnect } from "@/lib/mongoConnect";
-import { revalidateTag } from "next/cache";
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
-
-// GET all menu items
 import { getMenus } from "@/services/menuService";
 
+// Get all menu items
 export async function GET() {
   try {
     const items = await getMenus();
@@ -13,14 +12,12 @@ export async function GET() {
     console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch menu items" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
 
-// POST new menu item
-import { revalidatePath } from "next/cache";
-
+// Create new menu item
 export async function POST(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
@@ -29,7 +26,7 @@ export async function POST(req: NextRequest) {
     if (!data.name || !data.price || !data.category || !data.image) {
       return NextResponse.json(
         { error: "Name, Price, Category and Image are required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -38,15 +35,18 @@ export async function POST(req: NextRequest) {
       createdAt: new Date(),
     });
 
-
     revalidatePath("/menu");
-    revalidatePath('/specialties')
+    revalidatePath("/specialties");
 
     return NextResponse.json(
       { message: "Dish added successfully", id: result.insertedId },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error(error);
+    return NextResponse.json(
+      { error: "Failed to add menu item" },
+      { status: 500 },
+    );
   }
 }

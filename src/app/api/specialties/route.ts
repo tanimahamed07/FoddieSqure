@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSpecialMenus } from "@/services/specialtiesService";
 
+// Get special menu items
 export async function GET() {
   try {
     const items = await getSpecialMenus();
@@ -9,7 +10,7 @@ export async function GET() {
     console.error(error);
     return NextResponse.json(
       { error: "Failed to fetch menu items" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

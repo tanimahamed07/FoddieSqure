@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import Container from "@/component/shared/Container";
-import { useForm, SubmitHandler } from "react-hook-form"; 
+import { useForm, SubmitHandler } from "react-hook-form";
 import { useSearchParams, useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import Swal from "sweetalert2";
@@ -18,7 +18,6 @@ const LoginContent = () => {
   const [isLoading, setIsLoading] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
-
   const callbackUrl = searchParams.get("callbackUrl") || "/";
 
   const {
@@ -27,6 +26,7 @@ const LoginContent = () => {
     formState: { errors },
   } = useForm<LoginFormInputs>();
 
+  // Handle form submission for login
   const onSubmit: SubmitHandler<LoginFormInputs> = async (data) => {
     setIsLoading(true);
     const { email, password } = data;
@@ -47,15 +47,13 @@ const LoginContent = () => {
           timer: 1500,
         });
 
-        // লগইন সফল হলে রিডাইরেক্ট এবং স্টেট রিফ্রেশ
         router.push(callbackUrl);
         router.refresh();
       } else {
-        // NextAuth-এর authorize থেকে আসা এরর মেসেজ দেখানো
         Swal.fire(
           "Error",
           result?.error || "Invalid email or password",
-          "error"
+          "error",
         );
       }
     } catch (error) {
@@ -66,9 +64,42 @@ const LoginContent = () => {
     }
   };
 
+  // Handle demo login with predefined credentials
+  const handleDemoLogin = async (email: string, password: string) => {
+    setIsLoading(true);
+
+    try {
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+        callbackUrl,
+      });
+
+      if (result?.ok) {
+        Swal.fire({
+          icon: "success",
+          title: "Demo Login Successful",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        router.push(callbackUrl);
+        router.refresh();
+      } else {
+        Swal.fire("Error", result?.error || "Demo login failed", "error");
+      }
+    } catch (error) {
+      console.error("Demo login error:", error);
+      Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-base-100 py-12 px-4">
-      {/* Background Blurs */}
+      {/* Background blur effects */}
       <div className="absolute top-[-10%] left-[-5%] w-72 h-72 bg-primary/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-[-10%] right-[-5%] w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
 
@@ -165,6 +196,26 @@ const LoginContent = () => {
                 )}
               </button>
 
+              {/* Demo login buttons */}
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <button
+                  type="button"
+                  onClick={() => handleDemoLogin("admin@admin.com", "123456")}
+                  disabled={isLoading}
+                  className="btn btn-outline btn-secondary rounded-2xl normal-case font-bold"
+                >
+                  Demo Admin
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDemoLogin("user@user.com", "123456")}
+                  disabled={isLoading}
+                  className="btn btn-outline btn-accent rounded-2xl normal-case font-bold"
+                >
+                  Demo User
+                </button>
+              </div>
+
               <div className="divider text-xs text-neutral/30 font-bold uppercase py-2">
                 Or continue with
               </div>
@@ -172,7 +223,7 @@ const LoginContent = () => {
             <GoogleButton />
 
             <p className="text-center mt-8 text-sm text-neutral/60 font-medium">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link
                 href="/register"
                 className="text-primary font-bold hover:underline"

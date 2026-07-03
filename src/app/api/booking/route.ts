@@ -16,24 +16,27 @@ export async function POST(req: NextRequest) {
       createdAt: new Date(),
     });
 
-    return NextResponse.json({ message: "Booking Successfully", id: result.insertedId }, { status: 201 });
+    return NextResponse.json(
+      { message: "Booking Successfully", id: result.insertedId },
+      { status: 201 },
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// ২. বুকিং লিস্ট দেখা (GET) - ইউজার বা এডমিন ডাটা দেখবে
+// Get bookings list - filtered by email for users, all bookings for admin
 export async function GET(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
     const { searchParams } = new URL(req.url);
     const email = searchParams.get("email");
 
-    // যদি ইমেইল থাকে তবে শুধু সেই ইউজারের বুকিং ফিল্টার হবে (My Bookings)
-    // ইমেইল না থাকলে সব বুকিং আসবে (Admin Dashboard)
+    // Filter by email if provided, otherwise return all bookings
     const query = email ? { email: email } : {};
-    
-    const bookings = await db.collection("bookings")
+
+    const bookings = await db
+      .collection("bookings")
       .find(query)
       .sort({ createdAt: -1 })
       .toArray();
@@ -44,14 +47,15 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// ৩. বুকিং ডিলিট (DELETE) - ইউজার বা এডমিন ডিলিট করবে
+// Delete a booking by ID
 export async function DELETE(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
     const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
 
-    if (!id) return NextResponse.json({ error: "ID is required" }, { status: 400 });
+    if (!id)
+      return NextResponse.json({ error: "ID is required" }, { status: 400 });
 
     const result = await db.collection("bookings").deleteOne({
       _id: new ObjectId(id),
@@ -61,32 +65,40 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Deleted Successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Deleted Successfully" },
+      { status: 200 },
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// ৪. বুকিং স্ট্যাটাস আপডেট (PATCH) - শুধু এডমিন স্ট্যাটাস পরিবর্তন করবে
+// Update booking status (admin only)
 export async function PATCH(req: NextRequest) {
   try {
     const { db } = await mongoConnect();
     const { id, status } = await req.json();
 
     if (!id || !status) {
-      return NextResponse.json({ error: "ID and Status are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "ID and Status are required" },
+        { status: 400 },
+      );
     }
 
-    const result = await db.collection("bookings").updateOne(
-      { _id: new ObjectId(id) },
-      { $set: { status: status } }
-    );
+    const result = await db
+      .collection("bookings")
+      .updateOne({ _id: new ObjectId(id) }, { $set: { status: status } });
 
     if (result.matchedCount === 0) {
       return NextResponse.json({ error: "Booking not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ message: "Status updated successfully" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Status updated successfully" },
+      { status: 200 },
+    );
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
